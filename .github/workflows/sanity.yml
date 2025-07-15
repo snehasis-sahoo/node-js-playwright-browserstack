@@ -18,6 +18,10 @@ jobs:
         node-version: [18]
     environment: ${{ matrix.environment }}
     steps:
+      - name: 'Create BrowserStack directory'
+        run: |
+          mkdir -p /home/runner/.browserstack
+          chmod 755 /home/runner/.browserstack
       - name: 'BrowserStack Env Setup'
         uses: 'browserstack/github-actions/setup-env@master'
         with:
