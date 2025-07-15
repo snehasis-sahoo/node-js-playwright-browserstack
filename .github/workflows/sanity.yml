@@ -40,4 +40,4 @@ jobs:
         env:
           TEST_ENVIRONMENT: ${{ matrix.environment }}
           BROWSERSTACK_HUB: ${{ vars.HUB_URL }}
-        run: npm run sample-test --trace on
+        run: npm run sample-test
