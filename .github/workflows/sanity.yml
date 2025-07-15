@@ -1,0 +1,39 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: Observability Sample Smoke Job
+on:
+  schedule:
+    - cron: "30 */2 * * *"
+  workflow_dispatch:
+
+jobs:
+  test-multi-environment:
+    name: 'NodeJS Playwright Suite on Test Observability - ${{ matrix.environment }}'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: [Europe, India]
+        node-version: [18]
+    environment: ${{ matrix.environment }}
+    steps:
+      - name: 'BrowserStack Env Setup'
+        uses: 'browserstack/github-actions/setup-env@master'
+        with:
+          username:  ${{secrets.BROWSERSTACK_USERNAME}}
+          access-key: ${{secrets.BROWSERSTACK_ACCESS_KEY}}
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: node -v
+      - run: npm install
+      - name: Run tests for ${{ matrix.environment }}
+        continue-on-error: true
+        env:
+          TEST_ENVIRONMENT: ${{ matrix.environment }}
+          BROWSERSTACK_HUB: ${{ vars.HUB_URL }}
+        run: npm run sample-test --trace on
